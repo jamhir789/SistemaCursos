@@ -30,6 +30,19 @@ namespace SistemaAC.Controllers
             return View(await _context.Categoria.ToListAsync());
         }
 
+        //metodo para obtener los datos por ajax del metodo filtrarDatos
+        public List<object[]>filtrarDatos(int numPagina,string valor)
+        {
+            return categoriaModels.filtrarDatos(numPagina, valor);
+        }
+
+
+        public List<Categoria> getCategorias(int id)
+        {
+            return categoriaModels.getCategorias(id) ;
+        }
+
+
         // GET: Categorias/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -55,6 +68,14 @@ namespace SistemaAC.Controllers
             return categoriaModels.CreateCategoria(nombre,descripcion,estado);
             
         }
+
+
+        //editar categoria
+        public List<IdentityError>editarCategorias(int id, string nombre , string descripcion , Boolean estado, string funcion)
+        {
+            return categoriaModels.editarCategorias(id,nombre,descripcion,estado,funcion);
+        }
+
 
 
 

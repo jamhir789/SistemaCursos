@@ -223,6 +223,15 @@ function crearUsuario(action)
 
     }
 }
+//funcion que se ejecuta automaticamente cada vez que se carga la vista index esto trae la tabla de los registros a visualizarse
+$().ready(() => {
+    document.getElementById("filtrar").focus();
+    filtrarDatos(1);
+});
+
+//objetos globales
+var idCategoria;
+
 
 var agregarCategoria = () => {
     var nombre = document.getElementById("Nombre").value;
@@ -239,8 +248,23 @@ var agregarCategoria = () => {
 
 var filtrarDatos = (numPagina) =>
 {
-    var valor = document.getElementById("filtar").value;
+    var valor = document.getElementById("filtrar").value;
     var action = 'Categorias/filtrarDatos';
     var categoria = new Categorias(valor, "", "", action);
     categoria.filtrarDatos(numPagina);
+}
+
+var editarEstado = (id) =>
+{
+    idCategoria = id;
+    var action = 'Categorias/getCategorias';
+    var categoria = new Categorias("", "", "", action);
+    categoria.getCategoria(id);
+}
+
+var editarCategorias = () =>
+{
+    var action = 'Categorias/editarCategorias';
+    var categoria = new Categorias("", "", "", action);
+    categoria.editarCategorias(idCategoria, "estado");
 }
