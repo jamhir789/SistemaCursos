@@ -1,12 +1,24 @@
-﻿
+﻿//modal de usuarios
 $('#modalEditar').on('shown.bs.modal', function () {
     $('#myInput').focus()
 })
-
+//modal de Categorias
 $('#moAgregar').on('shown.bs.modal', function () {
     $('#Nombre').focus()
 })
+//modal de Cursos
+$('#modalCS').on('chown.bs.modal', () => {
+    $('#Nombre').focus();
+});
 
+
+//funcion que se ejecuta automaticamente cada vez que se carga la vista index esto trae la tabla de los registros a visualizarse
+$().ready(() => {
+    document.getElementById("filtrar").focus();
+    filtrarDatos(1, "nombre");
+    filtrarCursos(1,"nombre");
+    getCategorias();
+});
 
 
 
@@ -51,7 +63,9 @@ var twoFactorEnabled;
 
 
 
-
+/* 
+ CODIGO PERTENECIANTE A USUARIOS/////////////////////////////////////////////////
+ */
 //funcion para mostrar loos datos
 function mostrarUsuario(response)
 {
@@ -103,7 +117,6 @@ function getRoles(action)
 
     })
 }
-
 
 
 function editarUsuario(action)
@@ -223,48 +236,94 @@ function crearUsuario(action)
 
     }
 }
-//funcion que se ejecuta automaticamente cada vez que se carga la vista index esto trae la tabla de los registros a visualizarse
-$().ready(() => {
-    document.getElementById("filtrar").focus();
-    filtrarDatos(1);
-});
+
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+/////////////////////////codigo perteneciente a categorias
 
 //objetos globales
 var idCategoria;
-
+var funcion = 0; 
 
 var agregarCategoria = () => {
     var nombre = document.getElementById("Nombre").value;
     var descripcion = document.getElementById("Descripcion").value;
     var estados = document.getElementById('Estado');
     //creamos una variable estado para obtener el id y despues pasarlo a estado donde obtenemos el dato seleccionado 
-    var estado = estados.options[estados.selectedIndex].value;
-    var action = 'Categorias/CreateCategoria';
+    var estado = estados.options[estados.selectedIndex].value
+    if (funcion == 0) {
+        var action = 'Categorias/CreateCategoria';
+    }
+    else {
+        var action = 'Categorias/editarCategorias';
+    }
+   
     //mandamos a llamar a la clases categorias para despues ejecutarlo
     var categoria = new Categorias(nombre, descripcion, estado, action);
-    categoria.agregarCategoria();
+    categoria.agregarCategoria(idCategoria, funcion);
     //ahora que ya tenemos las invocaciones no ahi que olvidar que debemos pasar el archivo categorias.js al layout por que lo estara buscando
 }
 
-var filtrarDatos = (numPagina) =>
+var filtrarDatos = (numPagina,order) =>
 {
     var valor = document.getElementById("filtrar").value;
     var action = 'Categorias/filtrarDatos';
     var categoria = new Categorias(valor, "", "", action);
-    categoria.filtrarDatos(numPagina);
+    categoria.filtrarDatos(numPagina,order);
 }
 
-var editarEstado = (id) =>
+var editarEstado = (id, fun) =>
 {
     idCategoria = id;
+    funcion = fun;
     var action = 'Categorias/getCategorias';
     var categoria = new Categorias("", "", "", action);
-    categoria.getCategoria(id);
+    categoria.getCategoria(id, funcion);
 }
 
 var editarCategorias = () =>
 {
     var action = 'Categorias/editarCategorias';
     var categoria = new Categorias("", "", "", action);
-    categoria.editarCategorias(idCategoria, "estado");
+    categoria.editarCategorias(idCategoria,funcion);
+}
+
+//////////////////////////////////
+
+
+///////////////codigo perteneciente a cursos
+
+
+//para poder obtener las categorias activas
+var getCategorias = () => {
+    var action = 'Cursoes/getCategorias';
+    var cursos = new Cursos("", "", "", "", "", "", "", action);
+    cursos.getCategorias();
+}
+
+var agregarCurso = () => {
+    var action = 'Cursoes/agregarCurso'
+    var nombre = document.getElementById("Nombre").value;
+    var descripcion = document.getElementById("Descripcion").value;
+    var creditos = document.getElementById("Creditos").value;
+    var horas = document.getElementById("Horas").value;
+    var costo = document.getElementById("Costo").value;
+    var estado = document.getElementById("Estado").checked;
+    var categorias = document.getElementById('CategoriaCursos');
+    var categoria = categorias.options[categorias.selectedIndex].value;
+    
+   
+    var cursos = new Cursos(nombre, descripcion, creditos,horas,costo,estado,categoria, action);
+    cursos.agregarCurso("","");
+}
+
+var filtrarCursos = (numPagina, order) => {
+    var valor = document.getElementById("filtrar").value;
+    var action = 'Cursoes/filtrarCursos';
+    var curso = new Cursos(valor, "", "", "", "", "", "",  action);
+    curso.filtrarCursos(numPagina, order);
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -36,7 +37,8 @@ namespace SistemaAC.Controllers
 
         }
 
-        // GET: Usuarios
+        //Con esto controlamos los la autorizacion para ciertos roles 
+        [Authorize(Roles = "Administrador")]
         public async Task<IActionResult> Index()
         {
             //Decalro una variable ID inicializado vacia

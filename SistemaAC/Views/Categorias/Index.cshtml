@@ -1,11 +1,11 @@
 ﻿
-@model IEnumerable<SistemaAC.Models.Categoria>
+
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categorias";
 }
 
-<h2>Index</h2>
+<h2>CATEGORIAS</h2>
 
 <p>
     <a class="btn btn-primary" data-toggle="modal" data-target="#moAgregar">Agregar Categoria</a>
@@ -16,20 +16,26 @@
 <div class="form-group">
    
     <div class="col-md-3">
-            <input id="filtrar" name="filtrar" placeholder="Buscar" onkeyup="filtrarDatos(1);" class="form-control" />
+            <input id="filtrar" name="filtrar" placeholder="Buscar" onkeyup="filtrarDatos(1,'nombre');" class="form-control" />
     </div>
 
 </div>
 <br />
 <br />
-<table class="table table-condensed">
+<table class="table table-condensed table-bordered">
     <thead>
         <tr>
 
-            <th scope="col">Nombre</th>
-            <th scope="col">Descripcion</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Opciones</th>
+            <th scope="col">
+                <a href="#" onclick='filtrarDatos(1,"nombre")'>Nombre</a>
+            </th>
+            <th scope="col">
+                <a href="#" onclick='filtrarDatos(1,"des")'>Descripcion</a>
+            </th>
+            <th scope="col">
+                <a href="#" onclick='filtrarDatos(1,"estado")'> Estado</a>
+            </th>
+                <th scope="col">Opciones</th>
         </tr>
     </thead>
     <tbody id="resultSearch"></tbody>
@@ -38,43 +44,6 @@
 
 </div>
 
-@*<table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Nombre)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Descripcion)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Estado)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Nombre)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Estado)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.CategoriaID">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.CategoriaID">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.CategoriaID">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>*@
 
 <!-----MODEL Agregar--->
 <div class="modal fade" id="moAgregar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

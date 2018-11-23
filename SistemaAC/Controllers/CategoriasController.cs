@@ -27,13 +27,13 @@ namespace SistemaAC.Controllers
         // GET: Categorias
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categoria.ToListAsync());
+            return View();
         }
 
         //metodo para obtener los datos por ajax del metodo filtrarDatos
-        public List<object[]>filtrarDatos(int numPagina,string valor)
+        public List<object[]>filtrarDatos(int numPagina,string valor,string order)
         {
-            return categoriaModels.filtrarDatos(numPagina, valor);
+            return categoriaModels.filtrarDatos(numPagina, valor,order);
         }
 
 
@@ -43,23 +43,6 @@ namespace SistemaAC.Controllers
         }
 
 
-        // GET: Categorias/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var categoria = await _context.Categoria
-                .SingleOrDefaultAsync(m => m.CategoriaID == id);
-            if (categoria == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoria);
-        }
 
         //creamos el metodo que recibe los datos del ajax en Categorias.js
         // y de esta forma los retornamos al metodo de CreateCategorias dentro del archivo CategoriaModels
@@ -71,7 +54,7 @@ namespace SistemaAC.Controllers
 
 
         //editar categoria
-        public List<IdentityError>editarCategorias(int id, string nombre , string descripcion , Boolean estado, string funcion)
+        public List<IdentityError>editarCategorias(int id, string nombre , string descripcion , Boolean estado, int funcion)
         {
             return categoriaModels.editarCategorias(id,nombre,descripcion,estado,funcion);
         }
@@ -97,74 +80,7 @@ namespace SistemaAC.Controllers
             return View(categoria);
         }
 
-        // POST: Categorias/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CategoriaID,Nombre,Descripcion,Estado")] Categoria categoria)
-        {
-            if (id != categoria.CategoriaID)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(categoria);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoriaExists(categoria.CategoriaID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(categoria);
-        }
-
-        // GET: Categorias/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var categoria = await _context.Categoria
-                .SingleOrDefaultAsync(m => m.CategoriaID == id);
-            if (categoria == null)
-            {
-                return NotFound();
-            }
-
-            return View(categoria);
-        }
-
-        // POST: Categorias/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var categoria = await _context.Categoria.SingleOrDefaultAsync(m => m.CategoriaID == id);
-            _context.Categoria.Remove(categoria);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool CategoriaExists(int id)
-        {
-            return _context.Categoria.Any(e => e.CategoriaID == id);
-        }
+        
     }
 
     

@@ -11,7 +11,7 @@ class Categorias {
         this.action = action;
     }
    //creo un metodo
-    agregarCategoria()
+    agregarCategoria(id,funcion)
     {
         if (this.nombre == "")
         {
@@ -40,7 +40,7 @@ class Categorias {
                     $.ajax({
                         type: "POST",
                         url: action,
-                        data: { nombre, descripcion, estado },
+                        data: {id,nombre, descripcion, estado,funcion },
                         success: (response) => {
                             $.each(response, (index, val) => {
                                 mensaje=val.code;
@@ -64,7 +64,7 @@ class Categorias {
         }
     }
     //
-    filtrarDatos(numPagina)
+    filtrarDatos(numPagina,order)
     {
         var valor = this.nombre;
         var action = this.action;
@@ -75,7 +75,7 @@ class Categorias {
         $.ajax({
             type: "POST",
             url: action,
-            data: { valor, numPagina },
+            data: { valor, numPagina , order},
             success: (response) => {
                 console.log(response);
                 $.each(response, (index, val) => {
@@ -89,7 +89,7 @@ class Categorias {
         });
     }
     //recibe la direccion del controlador
-    getCategoria(id)
+    getCategoria(id,funcion)
     {
         var action = this.action;
 
@@ -99,14 +99,30 @@ class Categorias {
             data: { id },
             success: (response) => {
                 console.log(response);
-                if (response[0].estado) {
-                    //obtenemos el id de el h4 y le asiganmos un texto ademas de concatenar la propiedad nombre del objeto
-                    document.getElementById("titleCategoria").innerHTML = "Estas seguro de desactivar la categoria " + response[0].nombre
+                if (funcion == 0) {
+
+                    if (response[0].estado) {
+                        //obtenemos el id de el h4 y le asiganmos un texto ademas de concatenar la propiedad nombre del objeto
+                        document.getElementById("titleCategoria").innerHTML = "Estas seguro de desactivar la categoria " + response[0].nombre
+                    }
+                    else {
+                        document.getElementById("titleCategoria").innerHTML = "Estas seguro de habilitar esta categoria " + response[0].nombre
+                    }
                 }
+
                 else
                 {
-                    document.getElementById("titleCategoria").innerHTML = "Estas seguro de habilitar esta categoria " + response[0].nombre
+                    document.getElementById("Nombre").value = response[0].nombre;
+                    document.getElementById("Descripcion").value = response[0].descripcion;
+                    if (response[0].estado) {
+                        document.getElementById("Estado").selectedIndex = 1;
+                    }
+                    else
+                    {
+                        document.getElementById("Estado").selectedIndex = 2;
+                    }
                 }
+
                 //invocamos al metodo - como los datos almacenados por el servidor son de tipo string
                 // llamamos la funcion stringfy para poder pasarselos al response
                 localStorage.setItem("categoria", JSON.stringify(response));
@@ -118,33 +134,18 @@ class Categorias {
     //Editar categoria
     editarCategorias(id,funcion)
     {
-        var nombre = null;
-        var descripcion = null;
-        var estado = null;
-        var action = null;
-        switch (funcion)
-        {
-            case "estado":
-                var response = JSON.parse(localStorage.getItem("categoria"));
-                //se coloca el valor 0 al objeto response para poder obtener la informacion en la memoria local del navegador
-                nombre = response[0].nombre;
-                descripcion = response[0].descripcion;
-                estado = response[0].estado;
+      
+        var action = this.action;
+        var response = JSON.parse(localStorage.getItem("categoria"));
+             //se coloca el valor 0 al objeto response para poder obtener la informacion en la memoria local del navegador
+        var  nombre = response[0].nombre;
+        var descripcion = response[0].descripcion;
+        var estado = response[0].estado;
                 //caudno ya tenemos la informacion eliminamos esa informacion para que nose llene el espacio de memoria que es de 5mb
                 localStorage.removeItem("categoria");
                 // le pasamos la informacion del metodo editarCategoria al metodo editar
-                this.editar(id, nombre, descripcion, estado, funcion)
-
-                break;
-
-            default:
-          
-        }
-    }
-   //enviamos por medio de ajax la informacion al controlador
-    editar(id, nombre, descripcion, estado, funcion)
-    {
-        var action = this.action;
+ 
+           //enviamos por medio de ajax la informacion al controlador
         $.ajax({
             type: "POST",
             url: action,
@@ -154,9 +155,9 @@ class Categorias {
                 this.restablecer();
             }
         });
+          
     }
 
-    //
     restablecer() {
         document.getElementById("Nombre").value = "";
         document.getElementById("Descripcion").value = "";
@@ -165,9 +166,15 @@ class Categorias {
         $('#moAgregar').modal('hide');
         $('#moEstado').modal('hide');
         //ejecutamos filtrar datos para actualizar los datos despues de cambiar el estado  de una categoria
-        filtrarDatos(1);
+        filtrarDatos(1, "nombre");
+    }
+
     }
 
 
 
-}
+    //
+  
+
+
+

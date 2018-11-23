@@ -47,17 +47,39 @@ namespace SistemaAC.ModelsClass
         }
 
         //metodo del paginador y filtro
-        public List<object[]> filtrarDatos(int numPagina, string valor)
+        public List<object[]> filtrarDatos(int numPagina, string valor,string order)
         {
-            int count = 0, cant, numRegistros = 0, inicio = 0, reg_por_pagina = 10;
+            int count = 0, cant, numRegistros = 0, inicio = 0, reg_por_pagina = 4;
             int can_paginas, pagina;
             string dataFielter = "", paginador = "", Estado = null;
             List<object[]> data = new List<object[]>();
             IEnumerable<Categoria> query;
-            var categorias = context.Categoria.OrderBy(c => c.Nombre).ToList();
+
+            List<Categoria> categorias = null;
+            switch (order)
+            {
+                case "nombre":
+                    categorias = context.Categoria.OrderBy(c => c.Nombre).ToList();
+                    break;
+                case "des":
+                    categorias = context.Categoria.OrderBy(c => c.Descripcion).ToList();
+
+                    break;
+                case "estado":
+                    categorias = context.Categoria.OrderByDescending(c => c.Estado).ToList();
+                    break;
+                
+            }
+
+           
             numRegistros = categorias.Count;
+            if ((numRegistros % reg_por_pagina) > 0)
+            {
+                numRegistros += 1;
+            }
             inicio = (numPagina - 1) * reg_por_pagina;
-            can_paginas=(numRegistros /reg_por_pagina);
+            can_paginas = (numRegistros / reg_por_pagina);
+            
             if (valor== "null")
             {
                 query = categorias.Skip(inicio).Take(reg_por_pagina);
@@ -79,7 +101,7 @@ namespace SistemaAC.ModelsClass
                 }
                 else
                 {
-                    Estado = "<a data-toggle='modal' data-target='#moEstado' onclick='editarEstado(" + item.CategoriaID + ")' class='btn btn-danger' >NO Activo</a>";
+                    Estado = "<a data-toggle='modal' data-target='#moEstado' onclick='editarEstado(" + item.CategoriaID + ','+0+")' class='btn btn-danger' >NO Activo</a>";
                 }
                 dataFielter += "<tr>" +
                     "<td>" + item.Nombre + "</td>" +
@@ -87,7 +109,8 @@ namespace SistemaAC.ModelsClass
                     "<td>" + Estado + "</td>" +
                     
                     "<td>" +
-                    "<a data-toggle='modal' data-target='#myModal' class='btn btn-success' onclick='editarEstado("+ item.CategoriaID + ',' + 1 +")'>Edit</a>" +
+                    //mandamos a llamar al modal que utilizamos para crear una nueva categoria
+                    "<a data-toggle='modal' data-target='#moAgregar' class='btn btn-success' onclick='editarEstado("+ item.CategoriaID + ',' + 1 +")'>Edit</a>" +
                      //como es una tabla maestra no se pueden eliminar solo podemos habilitar o deshabilitar las categorias
                      //"&nbsp;&nbsp;&nbsp;" +
                      // "<a data-toggle='modal' data-target='#myModal3' class='btn btn-danger'>Delete</a>" +
@@ -95,6 +118,30 @@ namespace SistemaAC.ModelsClass
                      "</tr>";
 
             }
+            if (valor == "null")
+            {
+              
+                if (numPagina > 1)
+                {
+                    pagina = numPagina - 1;
+                    paginador += "<a class='btn btn-default' onclick='filtrarDatos(" + 1 + ',' + '"' + order + '"' + ")'><<</a>" +
+                        "<a class='btn btn-default' onclick='filtrarDatos(" + pagina + ',' + '"' + order + '"' + ")'> <</a>";
+                }
+                if ( 1 < can_paginas)
+                {
+                    paginador += "<strong class='btn btn-success'>" + numPagina + ".de." + can_paginas + "</strong>";
+                }
+
+                //para navegar entre los registros hacia adelante- primer b
+                if (numPagina < can_paginas)
+                {
+                    pagina = numPagina + 1;
+                    paginador += "<a class='btn btn-default' onclick='filtrarDatos(" + pagina + ',' + '"' + order + '"' + ")'> > </a>" +
+                        "<a class='btn btn-default' onclick='filtrarDatos(" + can_paginas + ',' + '"' + order + '"' + ")'> >> </a>";
+                        }
+            }
+
+
             object[] dataObj = { dataFielter,paginador};
             data.Add(dataObj);
             return data;
@@ -106,14 +153,14 @@ namespace SistemaAC.ModelsClass
 
             return context.Categoria.Where(c => c.CategoriaID == id).ToList();
         }
-        public List<IdentityError> editarCategorias(int idCategoria, string nombre, string descripcion, Boolean estado, string funcion)
+        public List<IdentityError> editarCategorias(int idCategoria, string nombre, string descripcion, Boolean estado, int funcion)
         {
             var errorList = new List<IdentityError>();
             string code="", des="";
 
             switch (funcion)
             {
-                case "estado":
+                case 0:
                     if (estado)
                     {
                         estados = false;
@@ -122,33 +169,39 @@ namespace SistemaAC.ModelsClass
                     {
                         estados = true;
                     }
-                    //creo un objeto para invocar ala clase categoria  y asignarle los nuevos parametro que cambia el estado
-                    var categoria = new Categoria()
-                    {
-                        CategoriaID =idCategoria,
-                        Nombre = nombre,
-                        Descripcion = descripcion,
-                        Estado = estados,
-                    };
-
-                    try
-                    {
-                        context.Update(categoria);
-                        context.SaveChanges();
-                        code = "Save";
-                        des = "se ha podido actualizar el estado";
-                    }
-                    catch (Exception ex)
-                    {
-                        code = "Error";
-                        des = ex.Message;
-                        throw;
-                    }
-                    //creo un objeto context para poder invocar los metoso update y save para guardar os cambios
+                   
                     
+                    break;
+                case 1:
+                    estados = estado;
                     break;
              
             }
+
+            //creo un objeto para invocar ala clase categoria  y asignarle los nuevos parametro que cambia el estado
+            var categoria = new Categoria()
+            {
+                CategoriaID = idCategoria,
+                Nombre = nombre,
+                Descripcion = descripcion,
+                Estado = estados,
+            };
+
+            try
+            {
+                //creo un objeto context para poder invocar los metoso update y save para guardar os cambios
+                context.Update(categoria);
+                context.SaveChanges();
+                code = "Save";
+                des = "se ha podido actualizar el estado";
+            }
+            catch (Exception ex)
+            {
+                code = "Error";
+                des = ex.Message;
+                throw;
+            }
+
 
             errorList.Add(new IdentityError {
                 Code = code,
