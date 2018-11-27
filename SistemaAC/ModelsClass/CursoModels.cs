@@ -19,6 +19,16 @@ namespace SistemaAC.ModelsClass
             this.context = context;
         }
 
+        internal List<Categoria> getCategorias()
+        {
+            return context.Categoria.Where(c => c.Estado == true).ToList();
+        }
+
+        public List<Categoria> getCategoria(int id)
+        {
+            return context.Categoria.Where(c => c.CategoriaID == id).ToList();
+        }
+
         public List<object[]> filtrarCursos(int numPagina, string valor, string order)
         {
             int  cant, numRegistros = 0, inicio = 0, reg_por_pagina = 4;
@@ -54,13 +64,13 @@ namespace SistemaAC.ModelsClass
                     break;
             }
             numRegistros = categorias.Count;
-            if ((numRegistros % reg_por_pagina) > 0)
-            {
-                numRegistros += 1;
-            }
+            //if ((numRegistros % reg_por_pagina) > 0)
+            //{
+            //    numRegistros += 1;
+            //}
             inicio = (numPagina - 1) * reg_por_pagina;
             can_paginas = (numRegistros / reg_por_pagina);
-
+           
             if (valor == "null")
             {
                 query = categorias.Skip(inicio).Take(reg_por_pagina);
@@ -71,16 +81,17 @@ namespace SistemaAC.ModelsClass
                 query = categorias.Where(c => c.Nombre.StartsWith(valor) || c.Descripcion.StartsWith(valor) ).Skip(inicio).Take(reg_por_pagina);
             }
             //ahora tenemos la cantidad de la consulta de los datos que coinciden con nuestra busqueda
+            cant = query.Count();
             foreach (var item in query)
             {
                 var categoria = getCategoria(item.CategoriaID);
                 if (item.Estado == true)
                 {
-                    Estado = "<a  data-toggle='modal' data-target='#moEstadoCurso' onclick='editarEstadoCurso(" + item.CategoriaID + ',' + 0 + ")'  class='btn btn-success' >Activo</a>";
+                    Estado = "<a  data-toggle='modal' data-target='#modalEstadoCurso' onclick='editarEstadoCurso(" + item.CursoID + ',' + 0 + ")'  class='btn btn-success' >Activo</a>";
                 }
                 else
                 {
-                    Estado = "<a data-toggle='modal' data-target='#moEstadoCurso' onclick='editarEstadoCurso(" + item.CategoriaID + ',' + 0 + ")' class='btn btn-danger' >NO Activo</a>";
+                    Estado = "<a data-toggle='modal' data-target='#modalEstadoCurso' onclick='editarEstadoCurso(" + item.CursoID + ',' + 0 + ")' class='btn btn-danger' >NO Activo</a>";
                 }
                 dataFielter += "<tr>" +
                     "<td>" + item.Nombre + "</td>" +
@@ -89,11 +100,11 @@ namespace SistemaAC.ModelsClass
                     "<td>" + item.Horas + "</td>" +
                     "<td>" + item.Costo + "</td>" +
                     "<td>" + Estado + "</td>" +
-                    "<td>" + categoria + "</td>" +
+                    "<td>" + categoria[0].Nombre + "</td>" +
 
                     "<td>" +
                     //mandamos a llamar al modal que utilizamos para crear una nueva categoria
-                    "<a data-toggle='modal' data-target='#moAgregar' class='btn btn-success' onclick='editarCurso(" + item.CategoriaID + ',' + 1 + ")'>Edit</a>" +
+                    "<a data-toggle='modal' data-target='#moAgregar' class='btn btn-success' onclick='editarCurso(" + item.CursoID + ',' + 1 + ")'>Edit</a>" +
                      
                      "&nbsp;&nbsp;&nbsp;" +
                      "<a data-toggle='modal' data-target='#myModal3'   class='btn btn-danger'>Delete</a>" +
@@ -105,7 +116,7 @@ namespace SistemaAC.ModelsClass
 
 
 
-            cant = query.Count();
+            //cant = query.Count();
             object[] dataObj = { dataFielter, paginador };
             data.Add(dataObj);
             return data;
@@ -114,7 +125,10 @@ namespace SistemaAC.ModelsClass
 
 
 
-
+        public List<Curso> getCursos(int id)
+        {
+            return context.Curso.Where(c => c.CursoID == id).ToList();
+        }
 
 
         public List<IdentityError> agregarCurso(int id, string nombre, string descripcion, Boolean estado,
@@ -158,14 +172,6 @@ namespace SistemaAC.ModelsClass
 
 
 
-        internal List<Categoria> getCategorias()
-        {
-            return context.Categoria.Where(c => c.Estado == true).ToList();
-        }
-
-        public List<Categoria> getCategoria(int id)
-        {
-            return context.Categoria.Where(c=> c.CategoriaID== id).ToList();
-        }
+      
     } 
 }

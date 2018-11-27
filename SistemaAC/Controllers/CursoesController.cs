@@ -26,8 +26,8 @@ namespace SistemaAC.Controllers
         // GET: Cursoes
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Curso.Include(c => c.Categoria);
-            return View(await applicationDbContext.ToListAsync());
+            
+            return View();
         }
 
 
@@ -47,6 +47,10 @@ namespace SistemaAC.Controllers
             return  cursoModels.filtrarCursos(numPagina,valor,order);
         }
 
+        public List<Curso>getCursos(int id)
+        {
+            return cursoModels.getCursos(id);
+        }
 
 
 

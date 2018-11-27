@@ -248,7 +248,7 @@ function crearUsuario(action)
 //objetos globales
 var idCategoria;
 var funcion = 0; 
-
+var idCurso;
 var agregarCategoria = () => {
     var nombre = document.getElementById("Nombre").value;
     var descripcion = document.getElementById("Descripcion").value;
@@ -326,4 +326,14 @@ var filtrarCursos = (numPagina, order) => {
     var action = 'Cursoes/filtrarCursos';
     var curso = new Cursos(valor, "", "", "", "", "", "",  action);
     curso.filtrarCursos(numPagina, order);
+}
+
+var editarEstadoCurso = (id,fun) => {
+    funcion = fun;
+    idCurso = id;
+    var action = 'Cursoes/getCursos';
+    var cursos = new Cursos("", "", "", "", "", "", "", action);
+    cursos.getCursos(id, fun);
+
+
 }

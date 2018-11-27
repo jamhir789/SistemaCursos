@@ -1,4 +1,9 @@
-﻿class Cursos {
+﻿//objeto de tipo promesa
+var promesa = new Promise((resolve, reject) => {
+});
+
+
+class Cursos {
     constructor(nombre, descripcion, creditos, horas, costo, estado, categoria, action) {
 
         this.nombre = nombre;
@@ -18,7 +23,7 @@
             url: action,
             data: {},
             success: (response) => {
-                console.log(response);
+                //console.log(response);
                 if (0 < response.length) {
                     for (var i = 0; i < response.length; i++) {
                         document.getElementById('CategoriaCursos').options[count] = new Option(response[i].nombre, response[i].categoriaID);
@@ -67,7 +72,7 @@
                                 var estado = this.estado;
                                 var categoria = this.categoria;
                                 var action = this.action;
-                                console.log(nombre);
+                                //console.log(nombre);
                                 $.ajax({
                                     type: "POST",
                                     url: action,
@@ -91,7 +96,41 @@
                 }
                 
             
-            
+    }
+
+
+    getCursos(id, funcion)
+    {
+        var action = this.action;
+        $.ajax({
+            type: "POST",
+            url: action,
+            data: { id },
+            success: (response) => {
+                console.log(response);
+                if (funcion == 0) {
+                    if (response[0].estado) {
+                        document.getElementById("titleCurso").innerHTML = "Esta seguro de Desactivar el curso" + response[0].nombre;
+                    }
+                    else {
+                        document.getElementById("titleCurso").innerHTML = "Esta seguro de Activar el curso" + response[0].nombre;
+                    }
+                    promesa = Promise.resolve({
+                        id: response[0].cursoID,
+                        nombre: response[0].nombre,
+                        descripcion: response[0].descripcion,
+                        creditos: response[0].creditos,
+                        hora: response[0].horas,
+                        costo: response[0].costo,
+                        estado: response[0].estado,
+                        categoriaID: response[0].categoriaID
+
+                    });
+                } else {
+                }
+            }
+
+        });
     }
 
 
@@ -106,6 +145,7 @@
         document.getElementById("mensaje").innerHTML = "";
         $('#modalCS').modal('hide');
     }
+
     filtrarCursos(numPagina,order)
     {
         var valor = this.nombre;
