@@ -15,9 +15,10 @@ $('#modalCS').on('chown.bs.modal', () => {
 //funcion que se ejecuta automaticamente cada vez que se carga la vista index esto trae la tabla de los registros a visualizarse
 $().ready(() => {
     document.getElementById("filtrar").focus();
+   
     filtrarDatos(1, "nombre");
     filtrarCursos(1,"nombre");
-    getCategorias();
+    getCategorias(0,0);
 });
 
 
@@ -265,6 +266,7 @@ var agregarCategoria = () => {
     //mandamos a llamar a la clases categorias para despues ejecutarlo
     var categoria = new Categorias(nombre, descripcion, estado, action);
     categoria.agregarCategoria(idCategoria, funcion);
+    funcion = 0;
     //ahora que ya tenemos las invocaciones no ahi que olvidar que debemos pasar el archivo categorias.js al layout por que lo estara buscando
 }
 
@@ -299,14 +301,19 @@ var editarCategorias = () =>
 
 
 //para poder obtener las categorias activas
-var getCategorias = () => {
+var getCategorias = (id,fun) => {
     var action = 'Cursoes/getCategorias';
     var cursos = new Cursos("", "", "", "", "", "", "", action);
-    cursos.getCategorias();
+    cursos.getCategorias(id,fun);
 }
 
 var agregarCurso = () => {
-    var action = 'Cursoes/agregarCurso'
+    if (funcion == 0) {
+        var action = 'Cursoes/agregarCurso'
+    }
+    else {
+        var action = 'Cursoes/editarCurso';
+    }
     var nombre = document.getElementById("Nombre").value;
     var descripcion = document.getElementById("Descripcion").value;
     var creditos = document.getElementById("Creditos").value;
@@ -315,25 +322,37 @@ var agregarCurso = () => {
     var estado = document.getElementById("Estado").checked;
     var categorias = document.getElementById('CategoriaCursos');
     var categoria = categorias.options[categorias.selectedIndex].value;
-    
-   
-    var cursos = new Cursos(nombre, descripcion, creditos,horas,costo,estado,categoria, action);
-    cursos.agregarCurso("","");
+    var cursos = new Cursos(nombre, descripcion, creditos, horas, costo, estado, categoria, action);
+    cursos.agregarCurso(idCurso, funcion);
+    funcion = 0;
 }
 
 var filtrarCursos = (numPagina, order) => {
     var valor = document.getElementById("filtrar").value;
     var action = 'Cursoes/filtrarCursos';
-    var curso = new Cursos(valor, "", "", "", "", "", "",  action);
-    curso.filtrarCursos(numPagina, order);
+    var cursos = new Cursos(valor, "", "", "", "", "", "",action);
+    cursos.filtrarCursos(numPagina, order);
 }
 
 var editarEstadoCurso = (id,fun) => {
     funcion = fun;
     idCurso = id;
     var action = 'Cursoes/getCursos';
-    var cursos = new Cursos("", "", "", "", "", "", "", action);
+    var cursos = new Cursos("", "", "", "", "", "", "",action);
     cursos.getCursos(id, fun);
 
 
+}
+
+
+var editarEstadoCurso1 = () => {
+    var action = 'Cursoes/editarCurso';
+    var cursos = new Cursos("", "", "", "", "", "", "",action);
+    cursos.editarEstadoCurso(idCurso, funcion);
+    
+}
+
+var restablecer = () => {
+    var cursos = new Cursos("", "", "", "", "", "", "", "");
+    cursos.restablecer();
 }

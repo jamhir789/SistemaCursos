@@ -14,6 +14,8 @@ namespace SistemaAC.ModelsClass
         private ApplicationDbContext context;
         private string code = "", des = "";
         private List<IdentityError> errorList = new List<IdentityError>();
+        private Boolean estados;
+
         public CursoModels(ApplicationDbContext context)
         {
             this.context = context;
@@ -31,7 +33,7 @@ namespace SistemaAC.ModelsClass
 
         public List<object[]> filtrarCursos(int numPagina, string valor, string order)
         {
-            int  cant, numRegistros = 0, inicio = 0, reg_por_pagina = 4;
+            int  cant, numRegistros = 0, inicio = 0, reg_por_pagina = 3;
             int can_paginas, pagina;
             string dataFielter = "", paginador = "", Estado = null;
             List<object[]> data = new List<object[]>();
@@ -64,10 +66,10 @@ namespace SistemaAC.ModelsClass
                     break;
             }
             numRegistros = categorias.Count;
-            //if ((numRegistros % reg_por_pagina) > 0)
-            //{
-            //    numRegistros += 1;
-            //}
+            if ((numRegistros % reg_por_pagina) > 0)
+            {
+                numRegistros += 1;
+            }
             inicio = (numPagina - 1) * reg_por_pagina;
             can_paginas = (numRegistros / reg_por_pagina);
            
@@ -104,7 +106,7 @@ namespace SistemaAC.ModelsClass
 
                     "<td>" +
                     //mandamos a llamar al modal que utilizamos para crear una nueva categoria
-                    "<a data-toggle='modal' data-target='#moAgregar' class='btn btn-success' onclick='editarCurso(" + item.CursoID + ',' + 1 + ")'>Edit</a>" +
+                    "<a data-toggle='modal' data-target='#modalCS' class='btn btn-success' onclick='editarEstadoCurso(" + item.CursoID + ',' + 1 + ")'>Edit</a>" +
                      
                      "&nbsp;&nbsp;&nbsp;" +
                      "<a data-toggle='modal' data-target='#myModal3'   class='btn btn-danger'>Delete</a>" +
@@ -112,11 +114,34 @@ namespace SistemaAC.ModelsClass
                      "</tr>";
 
             }
+            if (valor == "null")
+            {
+
+                if (numPagina > 1)
+                {
+                    pagina = numPagina - 1;
+                    paginador += "<a class='btn btn-default' onclick='filtrarCursos(" + 1 + ',' + '"' + order + '"' + ")'><<</a>" +
+                        "<a class='btn btn-default' onclick='filtrarCursos(" + pagina + ',' + '"' + order + '"' + ")'> <</a>";
+                }
+                if (1 < can_paginas)
+                {
+                    paginador += "<strong class='btn btn-success'>" + numPagina + ".de." + can_paginas + "</strong>";
+                }
+
+                //para navegar entre los registros hacia adelante- primer b
+                if (numPagina < can_paginas)
+                {
+                    pagina = numPagina + 1;
+                    paginador += "<a class='btn btn-default' onclick='filtrarCursos(" + pagina + ',' + '"' + order + '"' + ")'> > </a>" +
+                        "<a class='btn btn-default' onclick='filtrarCursos(" + can_paginas + ',' + '"' + order + '"' + ")'> >> </a>";
+                }
+            }
 
 
 
 
-            //cant = query.Count();
+
+            cant = query.Count();
             object[] dataObj = { dataFielter, paginador };
             data.Add(dataObj);
             return data;
@@ -132,7 +157,7 @@ namespace SistemaAC.ModelsClass
 
 
         public List<IdentityError> agregarCurso(int id, string nombre, string descripcion, Boolean estado,
-            byte creditos, byte horas, decimal costo, int categoria, string funcion)
+            byte creditos, byte horas, decimal costo, int categoriaID, string funcion)
         {
             var errorList = new List<IdentityError>();
             var curso = new Curso
@@ -144,7 +169,7 @@ namespace SistemaAC.ModelsClass
                 Creditos= creditos,
                 Horas = horas,
                 Costo =  costo,
-                CategoriaID = categoria,
+                CategoriaID = categoriaID,
                
 
             };
@@ -171,7 +196,63 @@ namespace SistemaAC.ModelsClass
         }
 
 
+        public List<IdentityError> editarCurso(int id, string nombre, string descripcion, bool estado, byte creditos,
+            byte horas, decimal costo, int categoriaID, int funcion)
+        {
+            switch(funcion)
+            {
+                case 0:
+                    if (estado)
+                    {
+                        estados = false;
+                    }
+                    else
+                    {
+                        estados = true;
+                    }
+                    break;
+               case 1:
+                    estados = estado;
+                    break;
+            }
 
+            //var errorList = new List<IdentityError>();
+            var curso = new Curso
+            {
+                CursoID= id,
+                Nombre = nombre,
+                Descripcion = descripcion,
+                //asiganamos un convert ala propiedad estado para convertir el dato de tipo string a un tipo boolean
+                Creditos = creditos,
+                Horas = horas,
+                Costo = costo,
+                Estado = estados,
+                CategoriaID = categoriaID,
+
+
+            };
+            try
+            {
+                context.Update(curso);
+                context.SaveChanges();
+                code = "Save";
+                des = "Save";
+
+            }
+            catch (Exception ex)
+            {
+                code = "error";
+                des = ex.Message;
+            }
+
+            errorList.Add(new IdentityError
+            {
+                Code = code,
+                Description = des
+            });
+            return errorList;
+
+        }
       
     } 
 }

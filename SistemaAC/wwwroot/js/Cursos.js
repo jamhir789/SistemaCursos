@@ -15,7 +15,7 @@ class Cursos {
         this.categoria = categoria;
         this.action = action;
     }
-    getCategorias() {
+    getCategorias(id,funcion) {
         var action = this.action;
         var count = 1;
         $.ajax({
@@ -24,10 +24,21 @@ class Cursos {
             data: {},
             success: (response) => {
                 //console.log(response);
+                document.getElementById('CategoriaCursos').options[0] = new Option("Seleccione un curso",0)
                 if (0 < response.length) {
-                    for (var i = 0; i < response.length; i++) {
-                        document.getElementById('CategoriaCursos').options[count] = new Option(response[i].nombre, response[i].categoriaID);
-                        count++;
+                    for (var i = 0; i < response.length; i++) { 
+                        if (funcion == 0) {
+                            document.getElementById('CategoriaCursos').options[count] = new Option(response[i].nombre, response[i].categoriaID);
+                            count++;
+                        }
+                        else {
+                            if (id == response[i].categoriaID)
+                            {
+                                document.getElementById('CategoriaCursos').options[0] = new Option(response[i].nombre, response[i].categoriaID);
+                                break;//colocamos un break puesto que si nuestro ciclo for ha logrado encontrar el dato no es necesario se siga repitiendo
+                            }
+                        }
+                     
                     }
 
                 }
@@ -124,14 +135,38 @@ class Cursos {
                         costo: response[0].costo,
                         estado: response[0].estado,
                         categoriaID: response[0].categoriaID
-
+                  
                     });
                 } else {
+                    document.getElementById("Nombre").value = response[0].nombre;
+                    document.getElementById("Descripcion").value = response[0].descripcion;
+                    document.getElementById("Creditos").value = response[0].creditos;
+                    document.getElementById("Horas").value = response[0].horas;
+                    document.getElementById("Costo").value = response[0].costo;
+                   // document.getElementById("Estado").checked = response[0].estado;
+                    //document.getElementById("CategoriaCursos").selectedIndex = response[0].categoria;
+                    getCategorias(response[0].categoriaID, 1);
+                    if (response[0].estado) {
+                        document.getElementById("Estado").checked = true;
+
+                    }
+                    else {
+                        document.getElementById("Estado").checked = false;
+                    }
+                  
+
                 }
+                //if (response[0].code == "Save") {
+                //    this.restablecer();
+                //}
             }
 
         });
     }
+
+  
+
+
 
 
     restablecer() {
@@ -141,9 +176,11 @@ class Cursos {
         document.getElementById("Horas").value = "";
         document.getElementById("Costo").value = "";
         document.getElementById("Estado").checked = false;
-        document.getElementById("CategoriasCursos").selectedIndex=0 ;
+        document.getElementById('CategoriaCursos').selectedIndex=0;
         document.getElementById("mensaje").innerHTML = "";
+        filtrarCursos(1, "nombre");
         $('#modalCS').modal('hide');
+        $('#modalEstadoCurso').modal('hide');
     }
 
     filtrarCursos(numPagina,order)
@@ -160,11 +197,38 @@ class Cursos {
             success: (response) => {
                 
                 $("#resultSearch2").html(response[0]);
-                $("#paginado").html(response[1]);
+                $("#paginado2").html(response[1]);
 
             }
         });
     }
+
+    editarEstadoCurso(id, funcion) {
+        var  nombre, descripcion, creditos, horas, costo, estado, categoriaID;
+        var action = this.action;
+        promesa.then(data => {
+            //id = data.id;
+            nombre = data.nombre;
+            descripcion = data.descripcion,
+            creditos = data.creditos;
+            horas = data.horas;
+            costo = data.costo;
+            estado = data.estado;
+            categoriaID = data.categoriaID;
+            $.ajax({
+                type: "POST",
+                url: action,
+                data:{ id, nombre, descripcion, estado, creditos, horas, costo, categoriaID, funcion },
+                success: (response) => {
+                    if (response[0].code == "Save") {
+                       this.restablecer();
+                    }
+                    this.restablecer();
+                }
+            });
+        });
+    }
+
 }
     
 

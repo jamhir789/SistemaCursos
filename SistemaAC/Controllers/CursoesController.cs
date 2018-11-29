@@ -52,7 +52,11 @@ namespace SistemaAC.Controllers
             return cursoModels.getCursos(id);
         }
 
-
+        public List<IdentityError> editarCurso(int id, string nombre, string descripcion, Boolean estado, byte creditos,
+            byte horas,decimal costo, int categoriaID, int funcion)
+        {
+            return cursoModels.editarCurso(id,nombre,descripcion,estado,creditos,horas,costo,categoriaID,funcion);
+        }
 
         // GET: Cursoes/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -11,7 +11,7 @@
 
     <div class="col-md-3">
         <p>
-            <a class="btn btn-primary" data-toggle="modal" data-target="#modalCS">Crear Curso</a>
+            <a class="btn btn-primary" data-toggle="modal" onclick="restablecer();" data-target="#modalCS">Crear Curso</a>
 
         </p>
         <input id="filtrar" name="filtrar" placeholder="Buscar" onkeyup="filtrarCursos(1,'Nombre')" class="form-control" />
@@ -50,9 +50,10 @@
             </th>
         </tr>
     </thead>
+
     <tbody id="resultSearch2"></tbody>
 </table>
-<div id="paginado">
+<div id="paginado2">
 
 </div>
 
@@ -118,7 +119,8 @@
                             <label for="Categoria" class="col-md-2 control-label">Categoria</label>
                             <div class="col-md-10">
                                 <select id='CategoriaCursos' class="form-control">
-                                    <option value='0'>Seleccione una categoria</option>
+                                  
+
                                 </select>
                             </div>
                         </div>
@@ -144,15 +146,15 @@
         <div class="modal-content">
             <div class="modal-header">
               
-                <h4 class="modal-title" id="titleCurso">Estas seguro de cambiar el estado </h4>
+                <h4 class="modal-title" id="titleCurso"> EDITAR ESTADO DEL CURSO </h4>
             </div>
             <div class="modal-body">
-               
+               <h3 id="titleCurso" class="modal-title"></h3>
 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" onclick="editarEstadoCurso()">Aceptar </button>
+                <button type="button" class="btn btn-primary" onclick="editarEstadoCurso1()">Aceptar </button>
             </div>
         </div>
     </div>
